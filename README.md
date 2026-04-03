@@ -8,9 +8,9 @@ Restaurants during peak hours face long waiting lines outside while tables insid
 ## Inspiration
 It all started with biryani.
 
-Not just any biryani — Golconda's, the kind of place where the smell hits you from the parking lot and suddenly nothing else in life matters. We showed up hungry, excited, ready. Then we saw the line. 45 minutes. Outside. In Chennai heat.
-No token. No updates. No idea if we were getting closer or just slowly becoming part of the scenery. Meanwhile we could literally see empty tables inside. It was painful in a way that only hunger and injustice combined can be.
-That was the moment. Not a boardroom, not a research paper — just two hungry college kids standing outside a biryani shop wondering why nobody had fixed this yet.
+Not just any biryani — Golconda's, the kind of place where the smell hits you from the parking lot and suddenly nothing else in life matters. We showed up hungry, excited, and ready. Then we saw the line. 45 minutes. Outside. In Chennai heat.
+No token. No updates. No idea if we were getting closer or just slowly becoming part of the scenery. Meanwhile, we could literally see empty tables inside. It was painful in a way that only hunger and injustice combined can be.
+That was the moment. Not a boardroom, not a research paper — just two hungry college kids standing outside a biryani shop, wondering why nobody had fixed this yet.
 So we did.
 
 ## Solution
@@ -18,17 +18,20 @@ SmartQ is a QR-based web app where walk-in customers scan a code to join a digit
 
 ## Live Demo
 🔗 https://smartq2-4a715.web.app
+🔗https://smartq2-4a715.web.app/dashboard
+<img width="560" height="550" alt="image" src="https://github.com/user-attachments/assets/fab3ef59-c9fc-43b0-bcb7-c4a73579c605" />
+
 
 ## How It Works
 **Customer flow:**
-1. Scan QR code at restaurant entrance
+1. Scan the QR code at the restaurant entrance
 2. Enter group size and table sharing preference
-3. Get a token number and see live queue position
+3. Get a token number and see the live queue position
 4. Pre-order food from the menu while waiting
-5. Get notified when table is ready
+5. Get notified when the table is ready
 
 **Staff flow:**
-1. Open dashboard at /dashboard
+1. Open the dashboard at /dashboard
 2. View live queue with all waiting groups
 3. See pre-orders and revenue in real time
 4. Seat groups with one click
