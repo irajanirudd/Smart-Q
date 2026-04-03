@@ -19,6 +19,7 @@ SmartQ is a QR-based web app where walk-in customers scan a code to join a digit
 ## Live Demo
 🔗 https://smartq2-4a715.web.app
 🔗https://smartq2-4a715.web.app/dashboard
+the password for the dashboard is-1234
 <img width="560" height="550" alt="image" src="https://github.com/user-attachments/assets/fab3ef59-c9fc-43b0-bcb7-c4a73579c605" />
 
 
