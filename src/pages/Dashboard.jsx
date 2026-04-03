@@ -36,10 +36,17 @@ export default function Dashboard() {
   const seated = queue.filter(q => q.status === "seated");
   const served = queue.filter(q => q.status === "served");
   const pendingOrders = waiting.filter(q => q.order?.length > 0);
-  const totalRevenue = queue
-    .filter(q => q.order?.length > 0)
-    .reduce((sum, q) => sum + (q.order?.reduce((s, i) => s + i.price * i.qty, 0) || 0), 0);
+  const today = new Date().toDateString();
+const todayQueue = queue.filter(q => {
+  if (!q.timestamp) return false;
+  return new Date(q.timestamp.seconds * 1000).toDateString() === today;
+});
 
+const totalRevenue = todayQueue
+  .filter(q => q.order?.length > 0)
+  .reduce((sum, q) => sum + (q.order?.reduce((s, i) => s + i.price * i.qty, 0) || 0), 0);
+
+const todaySeated = todayQueue.filter(q => q.status === "seated" || q.status === "served").length;
   if (!authed) return (
     <div style={{ minHeight: "100vh", background: "#f5f5f5", display: "flex", alignItems: "center", justifyContent: "center" }}>
       <div style={{ background: "white", borderRadius: "16px", padding: "2rem", width: "90%", maxWidth: "360px", textAlign: "center" }}>
@@ -75,9 +82,9 @@ export default function Dashboard() {
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: "10px", marginBottom: "1.5rem" }}>
           {[
             { label: "Waiting", value: waiting.length },
-            { label: "Seated", value: seated.length },
+            { label: "Seated today", value: todaySeated },
             { label: "Orders", value: pendingOrders.length },
-            { label: "Revenue", value: `₹${totalRevenue}` },
+            { label: "Today's revenue", value: `₹${totalRevenue}` },
           ].map((stat) => (
             <div key={stat.label} style={{ background: "white", borderRadius: "12px", padding: "1rem", textAlign: "center" }}>
               <p style={{ color: "#666", fontSize: "11px", marginBottom: "4px" }}>{stat.label}</p>
