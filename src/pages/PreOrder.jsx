@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { doc, updateDoc, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
 
@@ -16,7 +16,6 @@ const MENU = [
 
 export default function PreOrder() {
   const { id } = useParams();
-  const navigate = useNavigate();
   const [cart, setCart] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -53,25 +52,16 @@ export default function PreOrder() {
       .filter(item => cart[item.id])
       .map(item => ({ name: item.name, qty: cart[item.id], price: item.price }));
     await updateDoc(doc(db, "queue", id), { order });
-    setSubmitted(true);
     setLoading(false);
+    window.location.href = `/status/${id}`;
   };
 
   const categories = [...new Set(MENU.map(i => i.category))];
 
-  if (submitted) return (
-    <div style={{ minHeight: "100vh", background: "#f5f5f5", display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <div style={{ background: "white", borderRadius: "16px", padding: "2rem", width: "90%", maxWidth: "400px", textAlign: "center" }}>
-        <div style={{ fontSize: "48px", marginBottom: "1rem" }}>✅</div>
-        <h2 style={{ fontSize: "24px", fontWeight: "700" }}>Order placed!</h2>
-        <p style={{ color: "#666", margin: "8px 0 24px" }}>Your food will be ready when you're seated</p>
-        <button onClick={() => navigate(`/status/${id}`)}
-          style={{ width: "100%", padding: "14px", background: "#1a1a1a", color: "white", border: "none", borderRadius: "10px", fontSize: "16px", fontWeight: "600", cursor: "pointer" }}>
-          Back to queue status
-        </button>
-      </div>
-    </div>
-  );
+  if (submitted) {
+    window.location.href = `/status/${id}`;
+    return null;
+  }
 
   return (
     <div style={{ minHeight: "100vh", background: "#f5f5f5" }}>
