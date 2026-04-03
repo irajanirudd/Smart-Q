@@ -38,7 +38,7 @@ export default function JoinQueue() {
     }
   };
 
-  const estWait = waitingCount * 10;
+  const estWait = waitingCount === 0 ? "0" : `${waitingCount * 10}-${waitingCount * 15}`;
 
   return (
     <div style={{ minHeight: "100vh", background: "#f5f5f5", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -65,7 +65,7 @@ export default function JoinQueue() {
           </div>
           <div style={{ background: "#f5f5f5", borderRadius: "14px", padding: "12px", textAlign: "center" }}>
             <p style={{ fontSize: "22px", fontWeight: "700", color: "#1a1a1a" }}>🕐</p>
-            <p style={{ fontSize: "20px", fontWeight: "700", color: "#1a1a1a" }}>{estWait}m</p>
+            <p style={{ fontSize: "14px", fontWeight: "700", color: "#1a1a1a" }}>{estWait}m</p>
             <p style={{ fontSize: "11px", color: "#888", marginTop: "2px" }}>Est. wait</p>
           </div>
         </div>

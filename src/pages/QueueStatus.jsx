@@ -8,10 +8,12 @@ export default function QueueStatus() {
   const navigate = useNavigate();
   const [ticket, setTicket] = useState(null);
   const [position, setPosition] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const unsubTicket = onSnapshot(doc(db, "queue", id), (snap) => {
       if (snap.exists()) setTicket({ id: snap.id, ...snap.data() });
+      setLoading(false);
     });
 
     const q = query(collection(db, "queue"), orderBy("timestamp"));
@@ -26,13 +28,16 @@ export default function QueueStatus() {
     return () => { unsubTicket(); unsubQueue(); };
   }, [id]);
 
-  if (!ticket) return (
-    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#f5f5f5" }}>
-      <p style={{ color: "#888" }}>Loading...</p>
+  // Loading splash screen
+  if (loading) return (
+    <div style={{ minHeight: "100vh", background: "#1a1a1a", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ fontSize: "56px", marginBottom: "16px" }}>🍽️</div>
+      <h1 style={{ fontSize: "28px", fontWeight: "800", color: "white", letterSpacing: "-1px" }}>SmartQ</h1>
+      <p style={{ color: "#666", marginTop: "8px", fontSize: "14px" }}>Loading your queue...</p>
     </div>
   );
 
-  if (ticket.status === "seated" || ticket.status === "served") return (
+  if (ticket?.status === "seated" || ticket?.status === "served") return (
     <div style={{ minHeight: "100vh", background: "#f5f5f5", display: "flex", alignItems: "center", justifyContent: "center" }}>
       <div style={{ background: "white", borderRadius: "20px", padding: "2.5rem", width: "90%", maxWidth: "400px", textAlign: "center", boxShadow: "0 4px 24px rgba(0,0,0,0.08)" }}>
         <div style={{ fontSize: "56px", marginBottom: "1rem" }}>🎉</div>
@@ -42,7 +47,7 @@ export default function QueueStatus() {
     </div>
   );
 
-  const orderTotal = ticket.order?.reduce((sum, item) => sum + item.price * item.qty, 0) || 0;
+  const orderTotal = ticket?.order?.reduce((sum, item) => sum + item.price * item.qty, 0) || 0;
 
   return (
     <div style={{ minHeight: "100vh", background: "#f5f5f5" }}>
@@ -71,19 +76,19 @@ export default function QueueStatus() {
         <div style={{ background: "white", borderRadius: "16px", padding: "1.25rem", marginBottom: "16px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
             <span style={{ color: "#666", fontSize: "14px" }}>👥 Group size</span>
-            <span style={{ fontWeight: "700", fontSize: "15px" }}>{ticket.groupSize} people</span>
+            <span style={{ fontWeight: "700", fontSize: "15px" }}>{ticket?.groupSize} people</span>
           </div>
           <div style={{ height: "1px", background: "#f0f0f0", marginBottom: "10px" }} />
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <span style={{ color: "#666", fontSize: "14px" }}>🤝 Table sharing</span>
-            <span style={{ fontWeight: "700", fontSize: "15px", color: ticket.sharing ? "#16a34a" : "#1a1a1a" }}>
-              {ticket.sharing ? "Yes ✓" : "No"}
+            <span style={{ fontWeight: "700", fontSize: "15px", color: ticket?.sharing ? "#16a34a" : "#1a1a1a" }}>
+              {ticket?.sharing ? "Yes ✓" : "No"}
             </span>
           </div>
         </div>
 
         {/* Order section */}
-        {ticket.order?.length > 0 ? (
+        {ticket?.order?.length > 0 ? (
           <div style={{ background: "white", borderRadius: "16px", padding: "1.25rem", marginBottom: "16px" }}>
             <p style={{ fontWeight: "800", marginBottom: "12px", color: "#1a1a1a", fontSize: "15px" }}>✅ Your pre-order</p>
             {ticket.order.map((item, i) => (

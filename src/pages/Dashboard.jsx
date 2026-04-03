@@ -9,12 +9,14 @@ export default function Dashboard() {
   const [authed, setAuthed] = useState(false);
   const [pin, setPin] = useState("");
   const [pinError, setPinError] = useState(false);
+  const [loadingData, setLoadingData] = useState(true);
 
   useEffect(() => {
     if (!authed) return;
     const q = query(collection(db, "queue"), orderBy("timestamp"));
     const unsub = onSnapshot(q, (snapshot) => {
       setQueue(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
+      setLoadingData(false);
     });
     return () => unsub();
   }, [authed]);
@@ -37,19 +39,19 @@ export default function Dashboard() {
   const served = queue.filter(q => q.status === "served");
   const pendingOrders = waiting.filter(q => q.order?.length > 0);
   const today = new Date().toDateString();
-const todayQueue = queue.filter(q => {
-  if (!q.timestamp) return false;
-  return new Date(q.timestamp.seconds * 1000).toDateString() === today;
-});
+  const todayQueue = queue.filter(q => {
+    if (!q.timestamp) return false;
+    return new Date(q.timestamp.seconds * 1000).toDateString() === today;
+  });
+  const totalRevenue = todayQueue
+    .filter(q => q.order?.length > 0)
+    .reduce((sum, q) => sum + (q.order?.reduce((s, i) => s + i.price * i.qty, 0) || 0), 0);
+  const todaySeated = todayQueue.filter(q => q.status === "seated" || q.status === "served").length;
 
-const totalRevenue = todayQueue
-  .filter(q => q.order?.length > 0)
-  .reduce((sum, q) => sum + (q.order?.reduce((s, i) => s + i.price * i.qty, 0) || 0), 0);
-
-const todaySeated = todayQueue.filter(q => q.status === "seated" || q.status === "served").length;
   if (!authed) return (
     <div style={{ minHeight: "100vh", background: "#f5f5f5", display: "flex", alignItems: "center", justifyContent: "center" }}>
       <div style={{ background: "white", borderRadius: "16px", padding: "2rem", width: "90%", maxWidth: "360px", textAlign: "center" }}>
+        <div style={{ fontSize: "40px", marginBottom: "12px" }}>🍽️</div>
         <h2 style={{ fontSize: "22px", fontWeight: "700", marginBottom: "8px" }}>Staff Access</h2>
         <p style={{ color: "#666", fontSize: "14px", marginBottom: "24px" }}>Enter your PIN to continue</p>
         <input
@@ -66,6 +68,14 @@ const todaySeated = todayQueue.filter(q => q.status === "seated" || q.status ===
           Login
         </button>
       </div>
+    </div>
+  );
+
+  if (loadingData) return (
+    <div style={{ minHeight: "100vh", background: "#1a1a1a", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ fontSize: "56px", marginBottom: "16px" }}>🍽️</div>
+      <h1 style={{ fontSize: "28px", fontWeight: "800", color: "white", letterSpacing: "-1px" }}>SmartQ</h1>
+      <p style={{ color: "#666", marginTop: "8px", fontSize: "14px" }}>Loading dashboard...</p>
     </div>
   );
 
@@ -96,8 +106,10 @@ const todaySeated = todayQueue.filter(q => q.status === "seated" || q.status ===
         {/* Waiting */}
         <h2 style={{ fontSize: "16px", fontWeight: "700", marginBottom: "12px", color: "#1a1a1a" }}>Waiting queue</h2>
         {waiting.length === 0 && (
-          <div style={{ background: "white", borderRadius: "12px", padding: "2rem", textAlign: "center", color: "#888" }}>
-            No one waiting right now
+          <div style={{ background: "white", borderRadius: "12px", padding: "2rem", textAlign: "center" }}>
+            <div style={{ fontSize: "40px", marginBottom: "8px" }}>🎉</div>
+            <p style={{ fontWeight: "700", color: "#1a1a1a", marginBottom: "4px" }}>Queue is clear!</p>
+            <p style={{ color: "#888", fontSize: "14px" }}>No one waiting right now</p>
           </div>
         )}
         {waiting.map((ticket, index) => (
@@ -127,10 +139,15 @@ const todaySeated = todayQueue.filter(q => q.status === "seated" || q.status ===
                   </div>
                 )}
               </div>
-              <button onClick={() => markSeated(ticket.id)}
-                style={{ background: "#1a1a1a", color: "white", border: "none", borderRadius: "8px", padding: "8px 16px", fontSize: "13px", fontWeight: "600", cursor: "pointer", whiteSpace: "nowrap" }}>
-                Seat ✓
-              </button>
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px", alignItems: "flex-end" }}>
+                <button onClick={() => markSeated(ticket.id)}
+                  style={{ background: "#1a1a1a", color: "white", border: "none", borderRadius: "8px", padding: "8px 16px", fontSize: "13px", fontWeight: "600", cursor: "pointer", whiteSpace: "nowrap" }}>
+                  Seat ✓
+                </button>
+                <span style={{ fontSize: "11px", color: "#888", textAlign: "right" }}>
+                  📲 Customer notified on seat
+                </span>
+              </div>
             </div>
           </div>
         ))}
